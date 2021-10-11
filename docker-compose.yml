@@ -1,0 +1,27 @@
+version: "3"
+services:
+  dbticketfy:
+    image: postgres
+    container_name: dbticketfy
+    ports:
+      - ${DB_PORT}:5432
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+  web:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - ${PORT}:3001
+    command: npm run start:dev
+    volumes:
+      - .:/usr/src/app
+    environment:
+      DB_HOST: dbticketfy
+    depends_on:
+      - dbticketfy
