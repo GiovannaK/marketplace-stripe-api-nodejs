@@ -24,6 +24,7 @@
     "migration:run": "npm run build && npm run typeorm migration:run"
   },
   "dependencies": {
+    "@anchan828/nest-sendgrid": "^0.5.16",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.2",
     "@nestjs/core": "^8.0.0",
