@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EmailModule } from './email/email.module';
 import { SendGridModule } from '@anchan828/nest-sendgrid';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SendGridModule } from '@anchan828/nest-sendgrid';
     SendGridModule.forRoot({
       apikey: process.env.SENDGRID_API_KEY,
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

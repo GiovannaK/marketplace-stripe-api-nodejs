@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
 import { Repository } from 'typeorm';
@@ -26,7 +30,16 @@ export class UserService {
     return generateExpiration;
   }
 
+  async isEmailAlreadyExists(email: string) {
+    const user = await this.userRepository.findOne({ email });
+    if (user) {
+      throw new BadRequestException('Email already in use');
+    }
+    return;
+  }
+
   async createUser(createUserDto: CreateUserDto) {
+    await this.isEmailAlreadyExists(createUserDto.email);
     const loginToken = this.generateLoginToken();
     const expirationLoginToken = String(this.generateLoginTokenExpiration());
 
