@@ -1,4 +1,5 @@
 import { IsEmail, IsString, Length } from 'class-validator';
+import { Role } from '../entities/role/role.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -10,6 +11,8 @@ export class CreateUserDto {
   readonly email: string;
 
   readonly loginToken?: string | undefined;
+
+  readonly role?: Role;
 
   readonly expirationLoginToken?: string | undefined;
 }

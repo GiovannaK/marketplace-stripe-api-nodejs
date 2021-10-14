@@ -34,6 +34,7 @@ export class AuthController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('logout')
   async logout(@Res() response: Response) {
     const convertCookieSecureEnvVariable = () => {
