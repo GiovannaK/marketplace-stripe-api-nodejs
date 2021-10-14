@@ -1,9 +1,12 @@
 import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
+import { Role } from 'src/user/entities/role/role.enum';
 import { AuthDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import { Roles } from './decorators/roles.decorator';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from './login.dto';
+import { RolesGuard } from './roles.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +37,7 @@ export class AuthController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('logout')
   async logout(@Res() response: Response) {
     const convertCookieSecureEnvVariable = () => {
@@ -61,7 +65,8 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.SELLER)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('dashboard')
   dashboard() {
     return 'Secret page';

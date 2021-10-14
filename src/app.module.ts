@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { EmailModule } from './email/email.module';
 import { SendGridModule } from '@anchan828/nest-sendgrid';
 import { AuthModule } from './auth/auth.module';
+import { SellerModule } from './seller/seller.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
       apikey: process.env.SENDGRID_API_KEY,
     }),
     AuthModule,
+    SellerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
