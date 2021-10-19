@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
+import { StripeService } from 'src/stripe/stripe.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { Role } from 'src/user/entities/role/role.enum';
 import { User } from 'src/user/entities/user.entity';
@@ -14,6 +15,7 @@ export class SellerService {
     private readonly userRepository: Repository<User>,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
+    private readonly striperService: StripeService,
   ) {}
 
   async createSeller(createUserDto: CreateUserDto) {
@@ -33,8 +35,12 @@ export class SellerService {
     const createdUser = await this.userRepository.save(user);
 
     if (!createdUser) {
-      throw new InternalServerErrorException('User could not be created');
+      throw new InternalServerErrorException('Seller could not be created');
     }
+
+    const stripe = await this.striperService.createSellerStripe(
+      createdUser.email,
+    );
 
     const subject = 'Ticketfy: Faça login para continuar';
     const text = `Sua conta foi criada com sucesso, clique no link para fazer login: \n
@@ -43,6 +49,9 @@ export class SellerService {
 
     await this.emailService.sendEmail(user.email, subject, text);
 
-    return createdUser;
+    return {
+      user: createdUser,
+      account: stripe.account.id,
+    };
   }
 }
