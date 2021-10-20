@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/user/entities/user.entity';
 import Stripe from 'stripe';
@@ -50,5 +51,36 @@ export class StripeService {
       user: updatedSeller,
       account,
     };
+  }
+
+  async createAccountLink(request: Request | any) {
+    const accountLink = await this.stripe.accountLinks.create({
+      account: request.user.stripeAccountId,
+      refresh_url: `${process.env.FRONTEND_URL}/reauth`,
+      return_url: `${process.env.FRONTEND_URL}/return`,
+      type: 'account_onboarding',
+    });
+
+    if (!accountLink) {
+      throw new InternalServerErrorException(
+        'Cannot create an account link for this seller',
+      );
+    }
+
+    return accountLink;
+  }
+
+  async createLoginLink(request: Request | any) {
+    const loginLink = await this.stripe.accounts.createLoginLink(
+      request.user.stripeAccountId,
+    );
+
+    if (!loginLink) {
+      throw new InternalServerErrorException(
+        'Cannot create a login link for current seller',
+      );
+    }
+
+    return loginLink;
   }
 }
