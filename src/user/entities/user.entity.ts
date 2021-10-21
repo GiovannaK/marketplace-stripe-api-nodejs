@@ -1,4 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Order } from 'src/ticket/entities/order.entity';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Bank } from './bank.entity';
 import { Card } from './card.entity';
 import { Role } from './role/role.enum';
@@ -51,4 +60,16 @@ export class User {
 
   @OneToMany(() => Card, (card: Card) => card.userId)
   cards: Card[];
+
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.sellerId)
+  tickets: Ticket[];
+
+  @OneToMany(() => Order, (order: Order) => order.customerId)
+  order: Order[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

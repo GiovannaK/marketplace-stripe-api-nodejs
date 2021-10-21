@@ -9,6 +9,8 @@ import { SendGridModule } from '@anchan828/nest-sendgrid';
 import { AuthModule } from './auth/auth.module';
 import { SellerModule } from './seller/seller.module';
 import { StripeModule } from './stripe/stripe.module';
+import { TicketModule } from './ticket/ticket.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { StripeModule } from './stripe/stripe.module';
     AuthModule,
     SellerModule,
     StripeModule,
+    TicketModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
