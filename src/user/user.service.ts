@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Role } from './entities/role/role.enum';
 import { User } from './entities/user.entity';
 const crypto = require('crypto');
 
@@ -47,34 +46,6 @@ export class UserService {
     const user = await this.userRepository.create({
       ...createUserDto,
       loginToken,
-      expirationLoginToken,
-    });
-
-    const createdUser = await this.userRepository.save(user);
-
-    if (!createdUser) {
-      throw new InternalServerErrorException('User could not be created');
-    }
-
-    const subject = 'Ticketfy: Faça login para continuar';
-    const text = `Sua conta foi criada com sucesso, clique no link para fazer login: \n
-      ${user.loginToken}
-    `;
-
-    await this.emailService.sendEmail(user.email, subject, text);
-
-    return createdUser;
-  }
-
-  async createSeller(createUserDto: CreateUserDto) {
-    await this.isEmailAlreadyExists(createUserDto.email);
-    const loginToken = this.generateLoginToken();
-    const expirationLoginToken = String(this.generateLoginTokenExpiration());
-
-    const user = await this.userRepository.create({
-      ...createUserDto,
-      loginToken,
-      role: Role.SELLER,
       expirationLoginToken,
     });
 
