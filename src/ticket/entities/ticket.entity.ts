@@ -50,6 +50,9 @@ export class Ticket {
   link: string;
 
   @Column({ nullable: true })
+  imageUrl: string;
+
+  @Column({ nullable: true })
   address: string;
 
   @Column({ nullable: true })
@@ -65,15 +68,21 @@ export class Ticket {
   })
   longitude: number;
 
-  @OneToMany(() => Order, (orderTicket: Order) => orderTicket.ticketsOrder)
+  @OneToMany(() => Order, (orderTicket: Order) => orderTicket.ticketsOrder, {
+    cascade: true,
+  })
   orderTicket: Order[];
 
-  @ManyToOne(() => User, (sellerId: User) => sellerId.tickets)
+  @ManyToOne(() => User, (sellerId: User) => sellerId.tickets, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   sellerId: User;
 
   @ManyToOne(
     () => Category,
     (ticketCategory: Category) => ticketCategory.categoriesTickets,
+    { onDelete: 'CASCADE' },
   )
   ticketCategory: Category;
 

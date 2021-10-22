@@ -47,6 +47,8 @@ export class StripeService {
       stripeAccountId: account.id,
     });
 
+    await this.userRepository.save(updatedSeller);
+
     return {
       user: updatedSeller,
       account,

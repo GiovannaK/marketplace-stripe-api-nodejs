@@ -8,8 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Bank } from './bank.entity';
-import { Card } from './card.entity';
 import { Role } from './role/role.enum';
 
 @Entity()
@@ -55,16 +53,14 @@ export class User {
   })
   stripeAccountId: string;
 
-  @OneToMany(() => Bank, (bank: Bank) => bank.userId)
-  banks: Bank[];
-
-  @OneToMany(() => Card, (card: Card) => card.userId)
-  cards: Card[];
-
-  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.sellerId)
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.sellerId, {
+    cascade: true,
+  })
   tickets: Ticket[];
 
-  @OneToMany(() => Order, (order: Order) => order.customerId)
+  @OneToMany(() => Order, (order: Order) => order.customerId, {
+    cascade: true,
+  })
   order: Order[];
 
   @CreateDateColumn()

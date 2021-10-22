@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { Role } from 'src/user/entities/role/role.enum';
 import { AuthDto } from './auth.dto';
@@ -12,9 +20,12 @@ import { RolesGuard } from './roles.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('authorize')
-  async validateUser(@Body() authDto: AuthDto, @Res() response: Response) {
-    const getToken = await this.authService.validateUser(authDto);
+  @Get(':authToken')
+  async validateUser(
+    @Param('authToken') authToken: string,
+    @Res() response: Response,
+  ) {
+    const getToken = await this.authService.validateUser(authToken);
 
     const convertCookieSecureEnvVariable = () => {
       if (process.env.COOKIE_SECURE.toLocaleLowerCase() == 'true') {

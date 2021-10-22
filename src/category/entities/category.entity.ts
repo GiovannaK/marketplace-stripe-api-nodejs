@@ -19,6 +19,9 @@ export class Category {
   @OneToMany(
     () => Ticket,
     (categoryTicket: Ticket) => categoryTicket.ticketCategory,
+    {
+      cascade: true,
+    },
   )
   categoriesTickets: Ticket[];
 

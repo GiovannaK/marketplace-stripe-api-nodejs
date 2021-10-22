@@ -78,9 +78,10 @@ export class AuthService {
     return updatedUser;
   }
 
-  async validateUser(authDto: AuthDto) {
-    const { loginToken } = authDto;
-    const user = await this.userRepository.findOne({ where: { loginToken } });
+  async validateUser(authToken: string) {
+    const user = await this.userRepository.findOne({
+      where: { loginToken: authToken },
+    });
 
     if (!user) {
       throw new NotFoundException('Cannot found user');

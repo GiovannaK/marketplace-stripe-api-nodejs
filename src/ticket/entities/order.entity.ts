@@ -20,13 +20,22 @@ export class Order {
   @Column({ nullable: true, type: 'float' })
   total: number;
 
-  @ManyToOne(() => Ticket, (ticketOrder: Ticket) => ticketOrder.orderTicket)
+  @ManyToOne(() => Ticket, (ticketOrder: Ticket) => ticketOrder.orderTicket, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   ticketsOrder: Ticket;
 
-  @ManyToOne(() => User, (sellerId: User) => sellerId.tickets)
+  @ManyToOne(() => User, (sellerId: User) => sellerId.tickets, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   sellerId: User;
 
-  @ManyToOne(() => User, (customerId: User) => customerId.order)
+  @ManyToOne(() => User, (customerId: User) => customerId.order, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   customerId: User;
 
   @CreateDateColumn()
