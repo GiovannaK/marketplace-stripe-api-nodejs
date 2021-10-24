@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
 import { StripeService } from 'src/stripe/stripe.service';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { Role } from 'src/user/entities/role/role.enum';
 import { User } from 'src/user/entities/user.entity';
