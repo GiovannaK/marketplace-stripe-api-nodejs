@@ -68,6 +68,8 @@ export class AuthService {
       expirationLoginToken,
     });
 
+    await this.userRepository.save(updatedUser);
+
     const subject = 'Ticketfy: Faça login para continuar';
     const text = `clique no link para fazer login: \n
       ${updatedUser.loginToken}

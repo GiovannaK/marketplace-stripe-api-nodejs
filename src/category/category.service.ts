@@ -65,7 +65,7 @@ export class CategoryService {
     const category = await this.findCategoryById(id);
 
     if (!category) {
-      new InternalServerErrorException('Cannot delete category');
+      throw new InternalServerErrorException('Cannot found category');
     }
     return this.categoryRepository.remove(category);
   }

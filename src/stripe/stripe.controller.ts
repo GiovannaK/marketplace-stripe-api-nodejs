@@ -14,13 +14,13 @@ export class StripeController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('accountLinks')
   async createAccountLink(@Req() request: Request) {
-    return this.stripeService.createAccountLink(request);
+    return await this.stripeService.createAccountLink(request);
   }
 
   @Roles(Role.SELLER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('loginLink')
   async createLoginLink(@Req() request: Request) {
-    return this.stripeService.createLoginLink(request);
+    return await this.stripeService.createLoginLink(request);
   }
 }

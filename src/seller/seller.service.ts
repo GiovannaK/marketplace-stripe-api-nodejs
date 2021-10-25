@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
 import { StripeService } from 'src/stripe/stripe.service';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { Role } from 'src/user/entities/role/role.enum';
 import { User } from 'src/user/entities/user.entity';
@@ -13,6 +14,8 @@ export class SellerService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Ticket)
+    private readonly ticketRepository: Repository<Ticket>,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly striperService: StripeService,
@@ -53,5 +56,18 @@ export class SellerService {
       user: createdUser,
       account: stripe.account.id,
     };
+  }
+  async findTicketBySeller(request: Request | any) {
+    const userId = request.user.id as string;
+    const sellerTickets = await this.ticketRepository.find({
+      relations: ['sellerId'],
+      where: {
+        sellerId: userId,
+      },
+      order: {
+        updatedAt: 'DESC',
+      },
+    });
+    return sellerTickets;
   }
 }

@@ -1,15 +1,13 @@
 import {
   IsBoolean,
-  IsDate,
   IsInt,
   IsNotEmpty,
   IsNumber,
-  isNumber,
   IsString,
   Length,
 } from 'class-validator';
 import { Category } from 'src/category/entities/category.entity';
-import { isFloat64Array } from 'util/types';
+import { User } from 'src/user/entities/user.entity';
 
 export class CreateTicketDto {
   @IsString()
@@ -47,10 +45,10 @@ export class CreateTicketDto {
   readonly price: number;
 
   @IsString()
-  readonly link?: string;
+  readonly link: string | undefined;
 
   @IsString()
-  readonly address: string;
+  readonly address: string | undefined;
 
   readonly imageUrl: string | undefined;
 
@@ -61,7 +59,7 @@ export class CreateTicketDto {
   @IsInt()
   readonly quantity: number;
 
-  readonly sellerId?: string | undefined;
+  readonly sellerId: User | undefined;
 
   @IsNotEmpty()
   readonly category: Category;
