@@ -38,13 +38,6 @@ export class TicketController {
     return await this.ticketService.findTicketById(id);
   }
 
-  @Roles(Role.SELLER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Get('seller')
-  async findTicketBySeller(@Req() request: Request) {
-    return await this.ticketService.findTicketBySeller(request);
-  }
-
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   async findAllTickets() {
@@ -66,6 +59,6 @@ export class TicketController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   async deleteTicket(@Param('id') id: string, @Req() request: Request) {
-    return await this.deleteTicket(id, request);
+    return await this.ticketService.deleteTicket(id, request);
   }
 }

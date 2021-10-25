@@ -59,7 +59,7 @@ export class CreateTicketDto {
   @IsInt()
   readonly quantity: number;
 
-  readonly sellerId?: User | undefined;
+  readonly sellerId: User | undefined;
 
   @IsNotEmpty()
   readonly category: Category;

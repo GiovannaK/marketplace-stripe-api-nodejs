@@ -14,6 +14,8 @@ export class SellerService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Ticket)
+    private readonly ticketRepository: Repository<Ticket>,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly striperService: StripeService,
@@ -54,5 +56,18 @@ export class SellerService {
       user: createdUser,
       account: stripe.account.id,
     };
+  }
+  async findTicketBySeller(request: Request | any) {
+    const userId = request.user.id as string;
+    const sellerTickets = await this.ticketRepository.find({
+      relations: ['sellerId'],
+      where: {
+        sellerId: userId,
+      },
+      order: {
+        updatedAt: 'DESC',
+      },
+    });
+    return sellerTickets;
   }
 }

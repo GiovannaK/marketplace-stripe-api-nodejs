@@ -32,7 +32,9 @@ export class TicketService {
   }
 
   async findTicketById(id: string) {
-    const ticket = await this.ticketRepository.findOne(id);
+    const ticket = await this.ticketRepository.findOne(id, {
+      relations: ['sellerId'],
+    });
 
     if (!ticket) {
       throw new NotFoundException('Ticket not found');
@@ -42,17 +44,13 @@ export class TicketService {
   }
 
   async findAllTickets() {
-    const tickets = await this.ticketRepository.find();
-    return tickets;
-  }
-
-  async findTicketBySeller(request: Request | any) {
-    const sellerTickets = await this.ticketRepository.find({
-      where: {
-        sellerId: request.user.id,
+    const tickets = await this.ticketRepository.find({
+      relations: ['sellerId'],
+      order: {
+        updatedAt: 'DESC',
       },
     });
-    return sellerTickets;
+    return tickets;
   }
 
   async updateTicket(
@@ -62,9 +60,7 @@ export class TicketService {
   ) {
     const ticket = await this.findTicketById(id);
 
-    if (request.user.id !== ticket.sellerId) {
-      throw new UnauthorizedException('Unauthorized to edit this ticket');
-    }
+    this.checkIfSellerIsOwnerOfTicket(ticket, request);
 
     await this.ticketRepository.update(ticket, {
       ...updateTicketDto,
@@ -83,14 +79,20 @@ export class TicketService {
   async deleteTicket(id: string, request: Request | any) {
     const ticket = await this.findTicketById(id);
 
-    if (request.user.id !== ticket.sellerId) {
-      throw new UnauthorizedException('Unauthorized to delete this ticket');
-    }
+    this.checkIfSellerIsOwnerOfTicket(ticket, request);
 
     if (!ticket) {
       throw new InternalServerErrorException('Ticket not found');
     }
 
-    return this.ticketRepository.remove(ticket);
+    return await this.ticketRepository.remove(ticket);
+  }
+
+  // check if current seller is owner of ticket id
+  checkIfSellerIsOwnerOfTicket(ticket: Ticket, request: Request | any) {
+    if (request.user.id !== ticket.sellerId.id) {
+      throw new UnauthorizedException('Unauthorized to update this ticket');
+    }
+    return;
   }
 }
