@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
-import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/user/entities/user.entity';
 import Stripe from 'stripe';
 import { Repository } from 'typeorm';
@@ -11,7 +10,6 @@ export class StripeService {
   private stripe: Stripe;
 
   constructor(
-    private readonly authService: AuthService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {
@@ -20,12 +18,11 @@ export class StripeService {
     });
   }
 
-  async createSellerStripe(email: string) {
-    const user = await this.authService.findUserByEmail(email);
+  async createSellerStripe(createdUser: User) {
     const account = await this.stripe.accounts.create({
       type: 'express',
       country: 'BR',
-      email: email,
+      email: createdUser.email,
       capabilities: {
         card_payments: { requested: true },
         transfers: { requested: true },
@@ -38,12 +35,12 @@ export class StripeService {
       );
     }
 
-    await this.userRepository.update(user, {
+    await this.userRepository.update(createdUser, {
       stripeAccountId: account.id,
     });
 
     const updatedSeller = await this.userRepository.create({
-      ...user,
+      ...createdUser,
       stripeAccountId: account.id,
     });
 
@@ -84,5 +81,12 @@ export class StripeService {
     }
 
     return loginLink;
+  }
+
+  async createCustomer(name: string, email: string) {
+    return this.stripe.customers.create({
+      name,
+      email,
+    });
   }
 }

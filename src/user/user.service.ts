@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
+import { StripeService } from 'src/stripe/stripe.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
@@ -17,6 +18,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly emailService: EmailService,
+    private readonly stripeService: StripeService,
   ) {}
 
   generateLoginToken() {
@@ -42,11 +44,16 @@ export class UserService {
     await this.isEmailAlreadyExists(createUserDto.email);
     const loginToken = this.generateLoginToken();
     const expirationLoginToken = String(this.generateLoginTokenExpiration());
+    const stripeCustomer = await this.stripeService.createCustomer(
+      createUserDto.fullName,
+      createUserDto.email,
+    );
 
     const user = await this.userRepository.create({
       ...createUserDto,
       loginToken,
       expirationLoginToken,
+      stripeCustomerId: stripeCustomer.id,
     });
 
     const createdUser = await this.userRepository.save(user);
@@ -57,7 +64,7 @@ export class UserService {
 
     const subject = 'Ticketfy: Faça login para continuar';
     const text = `Sua conta foi criada com sucesso, clique no link para fazer login: \n
-      ${user.loginToken}
+      ${process.env.FRONTEND_URL}/auth/${user.loginToken}
     `;
 
     await this.emailService.sendEmail(user.email, subject, text);
