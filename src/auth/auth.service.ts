@@ -9,7 +9,6 @@ import { EmailService } from 'src/email/email.service';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
-import { AuthDto } from './auth.dto';
 import { LoginDto } from './login.dto';
 
 @Injectable()
