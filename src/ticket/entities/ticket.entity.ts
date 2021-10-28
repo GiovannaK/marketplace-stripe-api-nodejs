@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Order } from './order.entity';
+import { Order } from '../../order/entities/order.entity';
 
 @Entity()
 export class Ticket {

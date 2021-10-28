@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
+import { Order } from 'src/order/entities/order.entity';
 import { User } from 'src/user/entities/user.entity';
 import Stripe from 'stripe';
 import { Repository } from 'typeorm';
@@ -88,5 +89,25 @@ export class StripeService {
       name,
       email,
     });
+  }
+
+  async charge(
+    amount: number,
+    paymentMehodId: string,
+    customerId,
+    sellerId: User,
+  ) {
+    const payment = await this.stripe.paymentIntents.create({
+      amount,
+      customer: customerId,
+      payment_method: paymentMehodId,
+      currency: 'BRL',
+      confirm: true,
+      transfer_data: {
+        destination: sellerId.stripeAccountId,
+      },
+    });
+
+    return payment;
   }
 }

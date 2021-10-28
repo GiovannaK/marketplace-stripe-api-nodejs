@@ -11,6 +11,7 @@ import { SellerModule } from './seller/seller.module';
 import { StripeModule } from './stripe/stripe.module';
 import { TicketModule } from './ticket/ticket.module';
 import { CategoryModule } from './category/category.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CategoryModule } from './category/category.module';
     StripeModule,
     TicketModule,
     CategoryModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

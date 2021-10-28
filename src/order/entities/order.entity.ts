@@ -7,7 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Ticket } from './ticket.entity';
+import { Ticket } from '../../ticket/entities/ticket.entity';
+import { Status } from './status/status.enum';
 
 @Entity()
 export class Order {
@@ -37,6 +38,13 @@ export class Order {
     onUpdate: 'CASCADE',
   })
   customerId: User;
+
+  @Column({
+    type: 'enum',
+    enum: Status,
+    default: Status.CREATED,
+  })
+  status: Status;
 
   @CreateDateColumn()
   createdAt: Date;

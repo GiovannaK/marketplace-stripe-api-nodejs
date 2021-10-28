@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -51,6 +52,29 @@ export class TicketService {
       },
     });
     return tickets;
+  }
+
+  async subtractTicketQuantity(id: string, quantity: number) {
+    const ticket = await this.findTicketById(id);
+
+    const currentQuantity = ticket.quantity - quantity;
+
+    if (currentQuantity <= 0) {
+      throw new ConflictException('out of stock');
+    }
+
+    await this.ticketRepository.update(ticket, {
+      quantity: currentQuantity,
+    });
+
+    const updatedQuantity = this.ticketRepository.create({
+      ...ticket,
+      quantity: currentQuantity,
+    });
+
+    await this.ticketRepository.save(updatedQuantity);
+
+    return updatedQuantity;
   }
 
   async updateTicket(

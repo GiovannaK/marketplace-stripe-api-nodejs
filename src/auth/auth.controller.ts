@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Role } from 'src/user/entities/role/role.enum';
-import { AuthDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
 import { JwtAuthGuard } from './jwt-auth.guard';

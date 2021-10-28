@@ -1,5 +1,5 @@
-import { Order } from 'src/ticket/entities/order.entity';
-import { Ticket } from 'src/ticket/entities/ticket.entity';
+import { Order } from '../../order/entities/order.entity';
+import { Ticket } from '../../ticket/entities/ticket.entity';
 import {
   Column,
   CreateDateColumn,
