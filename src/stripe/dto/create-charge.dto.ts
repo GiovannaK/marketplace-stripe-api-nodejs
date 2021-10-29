@@ -11,5 +11,8 @@ export class CreateCharge {
   amount: number;
 
   @IsNotEmpty()
-  id: User;
+  id: string;
+
+  @IsNotEmpty()
+  orderId: string;
 }

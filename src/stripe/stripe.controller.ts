@@ -37,6 +37,7 @@ export class StripeController {
       createChargeDto.paymentMethodId,
       request.user.customerId,
       createChargeDto.id,
+      createChargeDto.orderId,
     );
   }
 }

@@ -55,10 +55,21 @@ export class OrderService {
 
     await this.orderRepository.save(updatedOrder);
 
-    if (order.status === Status.SUCCESS) {
+    if (order.status === Status.CREATED) {
       const updatedQuantity = await this.ticketService.subtractTicketQuantity(
         order.ticketsOrder.id,
         order.quantity,
+      );
+      return {
+        updatedQuantity,
+        updatedOrder,
+      };
+    }
+
+    if (order.status === Status.FAIL) {
+      const updatedQuantity = await this.ticketService.subtractTicketQuantity(
+        order.ticketsOrder.id,
+        0,
       );
       return {
         updatedQuantity,
