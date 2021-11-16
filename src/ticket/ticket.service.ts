@@ -77,6 +77,31 @@ export class TicketService {
     return updatedQuantity;
   }
 
+  async addTicketQuantity(id: string, quantity: number) {
+    const ticket = await this.findTicketById(id);
+
+    const currentQuantity = ticket.quantity + quantity;
+
+    await this.ticketRepository.update(ticket, {
+      quantity: currentQuantity,
+    });
+
+    const updatedQuantity = this.ticketRepository.create({
+      ...ticket,
+      quantity: currentQuantity,
+    });
+
+    if (!updatedQuantity) {
+      throw new InternalServerErrorException('Cannot update ticket quantity');
+    }
+
+    await this.ticketRepository.save(updatedQuantity);
+
+    return {
+      quantity: updatedQuantity.quantity,
+    };
+  }
+
   async updateTicket(
     id: string,
     updateTicketDto: UpdateTicketDto,

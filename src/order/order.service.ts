@@ -10,6 +10,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { Order } from './entities/order.entity';
 import { Status } from './entities/status/status.enum';
 import { TicketService } from 'src/ticket/ticket.service';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -19,61 +20,64 @@ export class OrderService {
     private readonly ticketService: TicketService,
   ) {}
 
-  async getSeller(ticketId) {
-    const seller = await this.ticketService.findTicketById(ticketId);
-    return seller.sellerId;
+  async getSellerAndTicket(ticketId) {
+    const ticket = await this.ticketService.findTicketById(ticketId);
+    return ticket;
   }
 
   async createOrder(createOrderDto: CreateOrderDto, request: Request | any) {
-    const seller = await this.getSeller(createOrderDto.ticketsOrder);
+    const ticket = await this.getSellerAndTicket(createOrderDto.ticketsOrder);
+
     const order = await this.orderRepository.create({
       ...createOrderDto,
       customerId: request.user.customerId,
       status: Status.CREATED,
-      sellerId: seller,
+      sellerId: ticket.sellerId,
+      ticketsOrder: ticket,
     });
 
     if (!order) {
       throw new InternalServerErrorException('Cannot create Order');
     }
 
-    return await this.orderRepository.save(order);
+    const createdOrder = await this.orderRepository.save(order);
+
+    const updatedQuantity = await this.ticketService.subtractTicketQuantity(
+      createdOrder.ticketsOrder.id,
+      createdOrder.quantity,
+    );
+    return {
+      createdOrder,
+      quantity: updatedQuantity.quantity,
+    };
   }
 
   // update order status
-  async updateOrder(id: string, status: Status) {
+  async updateOrder(id: string, updateOrderDto: UpdateOrderDto) {
     const order = await this.findOrderById(id);
 
     await this.orderRepository.update(order, {
-      status,
+      ...updateOrderDto,
     });
 
-    const updatedOrder = this.orderRepository.create({
+    const updateOrder = this.orderRepository.create({
       ...order,
-      status,
+      ...updateOrderDto,
     });
 
-    await this.orderRepository.save(updatedOrder);
+    const updatedOrder = await this.orderRepository.save(updateOrder);
 
-    if (order.status === Status.CREATED) {
-      const updatedQuantity = await this.ticketService.subtractTicketQuantity(
+    console.log('UPD', updatedOrder);
+
+    if (updatedOrder.status === Status.FAIL) {
+      const updatedQuantity = await this.ticketService.addTicketQuantity(
         order.ticketsOrder.id,
-        order.quantity,
+        updatedOrder.quantity,
       );
       return {
         updatedQuantity,
         updatedOrder,
-      };
-    }
-
-    if (order.status === Status.FAIL) {
-      const updatedQuantity = await this.ticketService.subtractTicketQuantity(
-        order.ticketsOrder.id,
-        0,
-      );
-      return {
-        updatedQuantity,
-        updatedOrder,
+        message: 'FAIL',
       };
     }
 
@@ -81,7 +85,9 @@ export class OrderService {
   }
 
   async findOrderById(id: string) {
-    const order = await this.orderRepository.findOne(id);
+    const order = await this.orderRepository.findOne(id, {
+      relations: ['ticketsOrder'],
+    });
     if (!order) {
       throw new NotFoundException('Cannot found order');
     }
