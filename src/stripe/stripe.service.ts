@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
-import { Order } from 'src/order/entities/order.entity';
 import { User } from 'src/user/entities/user.entity';
 import Stripe from 'stripe';
 import { Repository } from 'typeorm';
@@ -17,6 +16,16 @@ export class StripeService {
     this.stripe = new Stripe(process.env.STRIPE_SECRET, {
       apiVersion: '2020-08-27',
     });
+  }
+
+  public async constructEventFromPayload(signature: string, payload: Buffer) {
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    return this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      webhookSecret,
+    );
   }
 
   async createSellerStripe(createdUser: User) {

@@ -12,6 +12,7 @@ import { StripeModule } from './stripe/stripe.module';
 import { TicketModule } from './ticket/ticket.module';
 import { CategoryModule } from './category/category.module';
 import { OrderModule } from './order/order.module';
+import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { OrderModule } from './order/order.module';
     TicketModule,
     CategoryModule,
     OrderModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [AppService],
