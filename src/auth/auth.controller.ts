@@ -25,19 +25,10 @@ export class AuthController {
     @Res() response: Response,
   ) {
     const getToken = await this.authService.validateUser(authToken);
-
-    const convertCookieSecureEnvVariable = () => {
-      if (process.env.COOKIE_SECURE.toLocaleLowerCase() == 'true') {
-        return true;
-      }
-      if (process.env.COOKIE_SECURE.toLocaleLowerCase() == 'false') {
-        return false;
-      }
-    };
     response.cookie('access_token', getToken.token, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: convertCookieSecureEnvVariable(),
+      secure: true,
       sameSite: 'none',
     });
 
@@ -50,18 +41,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('logout')
   async logout(@Res() response: Response) {
-    const convertCookieSecureEnvVariable = () => {
-      if (process.env.COOKIE_SECURE.toLocaleLowerCase() == 'true') {
-        return true;
-      }
-      if (process.env.COOKIE_SECURE.toLocaleLowerCase() == 'false') {
-        return false;
-      }
-    };
     response.cookie('access_token', '', {
       httpOnly: true,
       maxAge: 0,
-      secure: convertCookieSecureEnvVariable(),
+      secure: true,
       sameSite: 'none',
     });
 

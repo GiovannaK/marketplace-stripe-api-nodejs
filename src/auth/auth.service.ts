@@ -71,7 +71,7 @@ export class AuthService {
 
     const subject = 'Ticketfy: Faça login para continuar';
     const text = `clique no link para fazer login: \n
-      ${updatedUser.loginToken}
+      ${process.env.CLIENT_URL}/auth/${updatedUser.loginToken}
     `;
 
     await this.emailService.sendEmail(user.email, subject, text);
