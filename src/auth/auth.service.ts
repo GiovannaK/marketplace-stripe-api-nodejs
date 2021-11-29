@@ -101,6 +101,8 @@ export class AuthService {
       expirationLoginToken: null,
     });
 
+    await this.userRepository.save(updatedUser);
+
     const token = await this.jwtToken(user);
 
     return {

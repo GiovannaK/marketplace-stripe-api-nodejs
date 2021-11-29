@@ -3,8 +3,10 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Request } from 'express';
 import { EmailService } from 'src/email/email.service';
 import { StripeService } from 'src/stripe/stripe.service';
 import { Repository } from 'typeorm';
@@ -70,5 +72,17 @@ export class UserService {
     await this.emailService.sendEmail(user.email, subject, text);
 
     return createdUser;
+  }
+
+  async getCurrentUser(req: Request | any) {
+    const user = await this.userRepository.findOne({
+      id: req.user.id,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User could be not found');
+    }
+
+    return user;
   }
 }

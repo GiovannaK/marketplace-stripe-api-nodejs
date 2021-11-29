@@ -25,15 +25,31 @@ export class OrderService {
     return ticket;
   }
 
+  verifyTotalOrder = (quantity: number, ticketPrice: number) => {
+    if (quantity <= 0) {
+      throw new InternalServerErrorException('Cannot accept negative quantity');
+    }
+    const total = quantity * ticketPrice;
+    return total;
+  };
+
   async createOrder(createOrderDto: CreateOrderDto, request: Request | any) {
     const ticket = await this.getSellerAndTicket(createOrderDto.ticketsOrder);
 
-    const order = await this.orderRepository.create({
+    const checkTotalOrder = this.verifyTotalOrder(
+      createOrderDto.quantity,
+      ticket.price,
+    );
+
+    console.log('USER', request.user);
+
+    const order = this.orderRepository.create({
       ...createOrderDto,
-      customerId: request.user.customerId,
+      customerId: request.user.id,
       status: Status.CREATED,
       sellerId: ticket.sellerId,
       ticketsOrder: ticket,
+      total: checkTotalOrder,
     });
 
     if (!order) {
@@ -66,8 +82,6 @@ export class OrderService {
     });
 
     const updatedOrder = await this.orderRepository.save(updateOrder);
-
-    console.log('UPD', updatedOrder);
 
     if (updatedOrder.status === Status.FAIL) {
       const updatedQuantity = await this.ticketService.addTicketQuantity(

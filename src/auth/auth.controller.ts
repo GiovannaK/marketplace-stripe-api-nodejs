@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Role } from 'src/user/entities/role/role.enum';
+import { convertCookieSecureEnvVariable } from 'src/utils/convertCookieSecureEnvVariable';
 import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -28,7 +29,7 @@ export class AuthController {
     response.cookie('access_token', getToken.token, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: true,
+      secure: convertCookieSecureEnvVariable(),
       sameSite: 'none',
     });
 
@@ -39,12 +40,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('logout')
+  @Post('logout')
   async logout(@Res() response: Response) {
     response.cookie('access_token', '', {
       httpOnly: true,
       maxAge: 0,
-      secure: true,
+      secure: convertCookieSecureEnvVariable(),
       sameSite: 'none',
     });
 
