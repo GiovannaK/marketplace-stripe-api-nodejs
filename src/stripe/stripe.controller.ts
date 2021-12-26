@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -13,9 +21,13 @@ export class StripeController {
 
   @Roles(Role.SELLER)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('accountLinks')
+  @Get('accountLinks')
   async createAccountLink(@Req() request: Request) {
-    return await this.stripeService.createAccountLink(request);
+    try {
+      return await this.stripeService.createAccountLink(request);
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot generate account link');
+    }
   }
 
   @Roles(Role.SELLER)

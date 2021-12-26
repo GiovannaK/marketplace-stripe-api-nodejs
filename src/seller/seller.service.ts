@@ -44,8 +44,8 @@ export class SellerService {
     const stripe = await this.striperService.createSellerStripe(createdUser);
 
     const subject = 'Ticketfy: Faça login para continuar';
-    const text = `Sua conta foi criada com sucesso, clique no link para fazer login: \n
-      ${process.env.CLIENT_URL}/authseller/${user.loginToken}
+    const text = `Sua conta foi criada com sucesso, clique no link para iniciar os primeiros passos: \n
+      ${process.env.CLIENT_URL}/onboardingseller/${user.loginToken}
     `;
 
     await this.emailService.sendEmail(user.email, subject, text);
