@@ -69,12 +69,9 @@ export class AuthService {
 
     await this.userRepository.save(updatedUser);
 
-    const checkUserRoleToRedirectToDashboard =
-      user.role === 'user' ? 'auth' : 'authseller';
-
     const subject = 'Ticketfy: Faça login para continuar';
     const text = `clique no link para fazer login: \n
-      ${process.env.CLIENT_URL}/${checkUserRoleToRedirectToDashboard}/${updatedUser.loginToken}
+      ${process.env.CLIENT_URL}/auth/${updatedUser.loginToken}
     `;
 
     await this.emailService.sendEmail(user.email, subject, text);

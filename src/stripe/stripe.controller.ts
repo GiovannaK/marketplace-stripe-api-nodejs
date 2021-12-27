@@ -32,7 +32,7 @@ export class StripeController {
 
   @Roles(Role.SELLER)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('loginLink')
+  @Get('loginLink')
   async createLoginLink(@Req() request: Request) {
     return await this.stripeService.createLoginLink(request);
   }
