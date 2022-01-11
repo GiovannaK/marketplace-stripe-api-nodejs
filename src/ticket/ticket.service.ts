@@ -23,6 +23,7 @@ export class TicketService {
       ...createTicketDto,
       sellerId: request.user.id,
       ticketCategory: createTicketDto.category,
+      isOnline: true,
     });
 
     if (!ticket) {
@@ -34,7 +35,7 @@ export class TicketService {
 
   async findTicketById(id: string) {
     const ticket = await this.ticketRepository.findOne(id, {
-      relations: ['sellerId'],
+      relations: ['sellerId', 'ticketCategory'],
     });
 
     if (!ticket) {
@@ -46,7 +47,7 @@ export class TicketService {
 
   async findAllTickets() {
     const tickets = await this.ticketRepository.find({
-      relations: ['sellerId'],
+      relations: ['sellerId', 'ticketCategory'],
       order: {
         updatedAt: 'DESC',
       },

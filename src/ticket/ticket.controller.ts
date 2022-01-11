@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   Post,
   Put,
@@ -29,19 +30,29 @@ export class TicketController {
     @Req() request: Request,
     @Body() createTicketDto: CreateTicketDto,
   ) {
-    return await this.ticketService.createTicket(request, createTicketDto);
+    try {
+      return await this.ticketService.createTicket(request, createTicketDto);
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot create ticket');
+    }
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   async findTicketById(@Param('id') id: string) {
-    return await this.ticketService.findTicketById(id);
+    try {
+      return await this.ticketService.findTicketById(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot found ticket');
+    }
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   async findAllTickets() {
-    return await this.ticketService.findAllTickets();
+    try {
+      return await this.ticketService.findAllTickets();
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot found tickets');
+    }
   }
 
   @Roles(Role.SELLER)
@@ -52,13 +63,25 @@ export class TicketController {
     @Body() updateTicketDto: UpdateTicketDto,
     @Req() request: Request,
   ) {
-    return await this.ticketService.updateTicket(id, updateTicketDto, request);
+    try {
+      return await this.ticketService.updateTicket(
+        id,
+        updateTicketDto,
+        request,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot update ticket');
+    }
   }
 
   @Roles(Role.SELLER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   async deleteTicket(@Param('id') id: string, @Req() request: Request) {
-    return await this.ticketService.deleteTicket(id, request);
+    try {
+      return await this.ticketService.deleteTicket(id, request);
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot delete ticket');
+    }
   }
 }

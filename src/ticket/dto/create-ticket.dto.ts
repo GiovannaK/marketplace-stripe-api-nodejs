@@ -29,34 +29,23 @@ export class CreateTicketDto {
   @IsBoolean()
   readonly isActive: boolean;
 
-  @IsBoolean()
-  readonly hasVariation: boolean;
-
-  @IsBoolean()
-  readonly isOnline: boolean;
-
-  @IsNumber()
-  readonly priceStandard: number;
-
-  @IsNumber()
-  readonly pricePremium: number;
-
   @IsNumber()
   readonly price: number;
 
   @IsString()
   readonly link: string | undefined;
 
-  @IsString()
-  readonly address: string | undefined;
+  // @IsString()
+  // readonly address: string | undefined;
 
-  readonly imageUrl: string | undefined;
+  // readonly imageUrl: string | undefined;
 
-  readonly latitude: number | undefined;
+  // readonly latitude: number | undefined;
 
-  readonly longitude: number | undefined;
+  // readonly longitude: number | undefined;
 
   @IsInt()
+  @IsNotEmpty()
   readonly quantity: number;
 
   readonly sellerId: User | undefined;
