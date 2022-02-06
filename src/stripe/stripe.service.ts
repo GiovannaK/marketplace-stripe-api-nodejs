@@ -102,7 +102,7 @@ export class StripeService {
 
   async charge(
     amount: number,
-    paymentMehodId: string,
+    paymentMethodId: string,
     customerId: any,
     sellerId: any,
     orderId: any,
@@ -110,7 +110,7 @@ export class StripeService {
     const payment = await this.stripe.paymentIntents.create({
       amount,
       customer: customerId,
-      payment_method: paymentMehodId,
+      payment_method: paymentMethodId,
       currency: 'BRL',
       confirm: true,
       metadata: {

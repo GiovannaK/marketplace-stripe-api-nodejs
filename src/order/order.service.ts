@@ -11,6 +11,8 @@ import { Order } from './entities/order.entity';
 import { Status } from './entities/status/status.enum';
 import { TicketService } from 'src/ticket/ticket.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { StripeService } from 'src/stripe/stripe.service';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 
 @Injectable()
 export class OrderService {
@@ -18,6 +20,7 @@ export class OrderService {
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
     private readonly ticketService: TicketService,
+    private readonly stripeService: StripeService,
   ) {}
 
   async getSellerAndTicket(ticketId) {
@@ -41,8 +44,6 @@ export class OrderService {
       ticket.price,
     );
 
-    console.log('USER', request.user);
-
     const order = this.orderRepository.create({
       ...createOrderDto,
       customerId: request.user.id,
@@ -62,6 +63,14 @@ export class OrderService {
       createdOrder.ticketsOrder.id,
       createdOrder.quantity,
     );
+
+    await this.validatePriceAndExecutingCharge(
+      createOrderDto,
+      request,
+      ticket,
+      createdOrder,
+    );
+
     return {
       createdOrder,
       quantity: updatedQuantity.quantity,
@@ -107,5 +116,23 @@ export class OrderService {
     }
 
     return order;
+  }
+
+  async validatePriceAndExecutingCharge(
+    createOrderDto: CreateOrderDto,
+    request: any,
+    ticket: Ticket,
+    createdOrder: Order,
+  ) {
+    if (createdOrder.total > 0) {
+      return await this.stripeService.charge(
+        createdOrder.total,
+        createOrderDto.paymentMethodId,
+        request.user.customerId,
+        ticket.sellerId,
+        createdOrder.id,
+      );
+    }
+    return;
   }
 }
