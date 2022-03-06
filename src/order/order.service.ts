@@ -13,7 +13,6 @@ import { TicketService } from 'src/ticket/ticket.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { StripeService } from 'src/stripe/stripe.service';
 import { Ticket } from 'src/ticket/entities/ticket.entity';
-import { Console } from 'console';
 
 @Injectable()
 export class OrderService {

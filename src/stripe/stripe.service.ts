@@ -107,22 +107,28 @@ export class StripeService {
     sellerId: any,
     orderId: any,
   ) {
-    console.log('chegouuuududu');
-    console.log(amount, paymentMethodId, customerId, sellerId, orderId);
-    const payment = await this.stripe.paymentIntents.create({
-      amount,
-      customer: customerId,
-      payment_method: paymentMethodId,
-      currency: 'BRL',
-      confirm: true,
-      metadata: {
-        orderId: orderId,
-      },
-      transfer_data: {
-        destination: sellerId,
-      },
-    });
-    console.log('PAYYY', payment);
-    return payment;
+    const convertedAmount = this.convertToCents(amount);
+    try {
+      const payment = await this.stripe.paymentIntents.create({
+        amount: convertedAmount,
+        customer: customerId,
+        payment_method: paymentMethodId,
+        confirm: true,
+        currency: 'BRL',
+        metadata: {
+          orderId: orderId,
+        },
+        transfer_data: {
+          destination: sellerId,
+        },
+      });
+      return payment;
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot process payment intent');
+    }
+  }
+
+  convertToCents(amount: number) {
+    return amount * 100;
   }
 }
