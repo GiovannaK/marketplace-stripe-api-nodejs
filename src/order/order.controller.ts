@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  InternalServerErrorException,
   Param,
   Post,
   Put,
@@ -27,7 +28,11 @@ export class OrderController {
     @Body() creteOrderDto: CreateOrderDto,
     @Req() request: Request,
   ) {
-    return await this.orderService.createOrder(creteOrderDto, request);
+    try {
+      return await this.orderService.createOrder(creteOrderDto, request);
+    } catch (error) {
+      return new InternalServerErrorException('Cannot create order');
+    }
   }
 
   @Roles(Role.USER)

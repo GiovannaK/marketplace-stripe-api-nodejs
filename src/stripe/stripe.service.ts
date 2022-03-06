@@ -103,10 +103,12 @@ export class StripeService {
   async charge(
     amount: number,
     paymentMethodId: string,
-    customerId: any,
+    customerId: string,
     sellerId: any,
     orderId: any,
   ) {
+    console.log('chegouuuududu');
+    console.log(amount, paymentMethodId, customerId, sellerId, orderId);
     const payment = await this.stripe.paymentIntents.create({
       amount,
       customer: customerId,
@@ -117,10 +119,10 @@ export class StripeService {
         orderId: orderId,
       },
       transfer_data: {
-        destination: sellerId.stripeAccountId,
+        destination: sellerId,
       },
     });
-
+    console.log('PAYYY', payment);
     return payment;
   }
 }

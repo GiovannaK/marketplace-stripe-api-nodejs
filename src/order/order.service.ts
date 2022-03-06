@@ -13,6 +13,7 @@ import { TicketService } from 'src/ticket/ticket.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { StripeService } from 'src/stripe/stripe.service';
 import { Ticket } from 'src/ticket/entities/ticket.entity';
+import { Console } from 'console';
 
 @Injectable()
 export class OrderService {
@@ -37,6 +38,7 @@ export class OrderService {
   };
 
   async createOrder(createOrderDto: CreateOrderDto, request: Request | any) {
+    console.log(request.user);
     const ticket = await this.getSellerAndTicket(createOrderDto.ticketsOrder);
 
     const checkTotalOrder = this.verifyTotalOrder(
@@ -63,6 +65,8 @@ export class OrderService {
       createdOrder.ticketsOrder.id,
       createdOrder.quantity,
     );
+
+    console.log('UPDATE', updatedQuantity);
 
     await this.validatePriceAndExecutingCharge(
       createOrderDto,
@@ -124,12 +128,13 @@ export class OrderService {
     ticket: Ticket,
     createdOrder: Order,
   ) {
+    console.log('TOLTAL', createdOrder.total);
     if (createdOrder.total > 0) {
       return await this.stripeService.charge(
         createdOrder.total,
         createOrderDto.paymentMethodId,
-        request.user.customerId,
-        ticket.sellerId,
+        request.user.stripeCustomerId,
+        ticket.sellerId.stripeAccountId,
         createdOrder.id,
       );
     }

@@ -57,9 +57,9 @@ export class TicketService {
 
   async subtractTicketQuantity(id: string, quantity: number) {
     const ticket = await this.findTicketById(id);
-
+    console.log('TICKET', ticket);
     const currentQuantity = ticket.quantity - quantity;
-
+    console.log('Current', currentQuantity);
     if (currentQuantity <= 0) {
       throw new ConflictException('out of stock');
     }
@@ -68,13 +68,15 @@ export class TicketService {
       quantity: currentQuantity,
     });
 
+    console.log('HOM');
+
     const updatedQuantity = this.ticketRepository.create({
       ...ticket,
       quantity: currentQuantity,
     });
 
     await this.ticketRepository.save(updatedQuantity);
-
+    console.log('UPDATE QUANTITY');
     return updatedQuantity;
   }
 
